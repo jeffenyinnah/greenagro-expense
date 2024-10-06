@@ -17,7 +17,6 @@ import { loginSchema, LoginFormData } from "@/types/authSchemas";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
-import Image from "next/image";
 
 export default function LoginForm() {
   const router = useRouter();

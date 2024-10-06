@@ -22,7 +22,6 @@ import {
   SheetTitle,
   SheetClose,
 } from "@/components/ui/sheet";
-import Image from "next/image";
 
 const menuItems = [
   { href: "/dashboard", icon: Home, label: "Dashboard" },
