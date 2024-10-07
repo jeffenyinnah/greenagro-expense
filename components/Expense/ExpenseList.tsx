@@ -127,30 +127,240 @@ export default function ExpenseList({
   };
 
   const handlePrint = () => {
-    window.print();
+    if (viewingExpense) {
+      const printWindow = window.open("", "_blank");
+      if (printWindow) {
+        const content = `
+          <html>
+            <head>
+              <title>Print Voucher</title>
+              <style>
+                body { font-family: Arial, sans-serif; font-size: 12px; line-height: 1.2; }
+                .voucher { max-width: 800px; margin: 0 auto; padding: 20px; }
+                .header { display: flex; justify-content: space-between; align-items: flex-start; }
+                .logo { width: 80px; height: auto; }
+                .title { text-align: center; flex-grow: 1; }
+                .form-number { text-align: right; }
+                h1, h2, h3 { margin: 5px 0; }
+                .voucher-title { text-align: center; margin: 10px 0; }
+                .details { display: grid; grid-template-columns: repeat(2, 1fr); gap: 5px; }
+                .expense-table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+                .expense-table th, .expense-table td { border: 1px solid #000; padding: 5px; text-align: left; }
+                .totals { margin: 10px 0; }
+                .certificate { margin: 10px 0; font-size: 10px; }
+                .signature { margin-top: 20px; }
+              </style>
+            </head>
+            <body>
+              <div class="voucher">
+                <div class="header">
+                  <img src="/logo.png" alt="Logo" class="logo" />
+                  <div class="title">
+                    <h1>GREEN AGRO COMMODITIES, LIMITADA</h1>
+                    <h3>MAPUTO-MOZAMBIQUE</h3>
+                  </div>
+                  <div class="form-number">
+                    <p>Treasury F1</p>
+                    <p>N° ${viewingExpense.id?.toString().padStart(4, "0")}</p>
+                  </div>
+                </div>
+                <h2 class="voucher-title">PAYMENT VOUCHER</h2>
+                <p>Checked and passed for payment at MAPUTO</p>
+                <div class="details">
+                  <p><strong>Classification Code:</strong> 26</p>
+                  <p><strong>Date:</strong> ${
+                    new Date(viewingExpense.date).toISOString().split("T")[0]
+                  }</p>
+                  <p><strong>Amount:</strong> MZN${viewingExpense.amount.toFixed(
+                    2
+                  )}</p>
+                  <p><strong>Payment Method:</strong> ${
+                    viewingExpense.PaymentMethod
+                  }</p>
+                  <p><strong>Category:</strong> ${getCategoryName(
+                    viewingExpense.categoryId
+                  )}</p>
+                  <p><strong>Type:</strong> ${getTypeName(
+                    viewingExpense.typeId
+                  )}</p>
+                  <p><strong>Payee:</strong> ${viewingExpense.vendorPayee}</p>
+                  <p><strong>Address:</strong> ${
+                    viewingExpense.expenseLocation
+                  }</p>
+                </div>
+                <table class="expense-table">
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Detailed Description of Service/Work</th>
+                      <th>MZN</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>${
+                        new Date(viewingExpense.date)
+                          .toISOString()
+                          .split("T")[0]
+                      }</td>
+                      <td>${viewingExpense.description}</td>
+                      <td>${viewingExpense.amount.toFixed(2)}</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <div class="totals">
+                  <p><strong>VAT (16%):</strong> 0.16</p>
+                  <p><strong>Total:</strong> ${viewingExpense.amount.toFixed(
+                    2
+                  )}</p>
+                  <p><strong>Total with VAT(16%):</strong> ${(
+                    viewingExpense.amount * 1.16
+                  ).toFixed(2)} MZN</p>
+                </div>
+                <div class="certificate">
+                  <h3>CERTIFICATE</h3>
+                  <p>---I Certify the above amount is correct, and was incurred under the Authority quoted, that the service have been
+                  duly performed, that the rate/price charged is according to regulations/contract is fair and reasonable
+                  that the amount of ......................................................... Meticais
+                  may paid under the Classification quoted</p>
+                </div>
+                <div class="signature">
+                  <p>Signature of GreenAgro</p>
+                  <p>Director</p>
+                </div>
+              </div>
+            </body>
+          </html>
+        `;
+
+        printWindow.document.write(content);
+        printWindow.document.close();
+
+        printWindow.onload = function () {
+          printWindow.print();
+          printWindow.onafterprint = function () {
+            printWindow.close();
+          };
+        };
+      } else {
+        console.error("Failed to open print window");
+      }
+    }
   };
 
   const handleDownload = () => {
-    if (!viewingExpense) return;
+    if (!viewingExpense || typeof viewingExpense.id === "undefined") {
+      console.error(
+        "Cannot download voucher: expense or expense ID is undefined"
+      );
+      return;
+    }
 
     const doc = new jsPDF();
 
-    doc.setFontSize(18);
-    doc.text("Expense Voucher", 14, 22);
+    // Add logo
+    // Note: You'll need to replace '/path/to/your/logo.png' with the actual path to your logo
+    doc.addImage("/logo.png", "PNG", 15, 15, 30, 30);
 
+    // Set up the document header
+    doc.setFontSize(16);
+    doc.setTextColor(23, 163, 74); // Blue color for header text
+    doc.text("GREEN AGRO COMMODITIES, LIMITADA", 105, 25, { align: "center" });
+    doc.setFontSize(14);
+    doc.text("MAPUTO-MOZAMBIQUE", 105, 45, { align: "center" });
+
+    // Add form details (Treasury F1 and Number)
     doc.setFontSize(12);
-    doc.text(`Description: ${viewingExpense.description}`, 14, 30);
-    doc.text(`Amount: $${viewingExpense.amount.toFixed(2)}`, 14, 38);
+    doc.setTextColor(0); // Reset to black
+    doc.rect(150, 15, 45, 20); // Add a border around the form number
+    doc.text("Treasury F1", 153, 25);
+    doc.text(`N° ${viewingExpense.id.toString().padStart(4, "0")}`, 153, 32);
+
+    // Payment Voucher title
+    doc.setFontSize(18);
+    doc.setTextColor(0); // Black color
+    doc.text("PAYMENT VOUCHER", 105, 60, { align: "center" });
+
+    // Checked and passed for payment
+    doc.setFontSize(10);
+    doc.text("Checked and passed for payment at MAPUTO", 15, 70);
+
+    // Add table for classification code
+    doc.rect(15, 75, 180, 10);
+    doc.text("Classification Code", 17, 81);
+    doc.text("26", 100, 81);
+
+    // Add date, amount, and other details
+    doc.rect(15, 87, 180, 40);
     doc.text(
-      `Date: ${new Date(viewingExpense.date).toLocaleDateString()}`,
-      14,
-      46
+      `Date: ${new Date(viewingExpense.date).toISOString().split("T")[0]}`,
+      17,
+      93
     );
-    doc.text(`Category: ${getCategoryName(viewingExpense.categoryId)}`, 14, 54);
-    doc.text(`Type: ${getTypeName(viewingExpense.typeId)}`, 14, 62);
-    doc.text(`Payment Method: ${viewingExpense.PaymentMethod}`, 14, 70);
-    doc.text(`Vendor/Payee: ${viewingExpense.vendorPayee}`, 14, 78);
-    doc.text(`Location: ${viewingExpense.expenseLocation}`, 14, 86);
+    doc.text(`Amount: MZN${viewingExpense.amount.toFixed(2)}`, 100, 93);
+    doc.text(`Payment Method: ${viewingExpense.PaymentMethod}`, 17, 101);
+    doc.text(
+      `Category: ${getCategoryName(viewingExpense.categoryId)}`,
+      17,
+      109
+    );
+    doc.text(`Type: ${getTypeName(viewingExpense.typeId)}`, 100, 109);
+    doc.text(`Payee: ${viewingExpense.vendorPayee}`, 17, 117);
+    doc.text(`Address: ${viewingExpense.expenseLocation}`, 17, 125);
+
+    // Add expense details
+    doc.rect(15, 129, 180, 40);
+    doc.setFillColor(240, 240, 240); // Light gray background for header
+    doc.rect(15, 129, 180, 8, "F");
+    doc.text("Date", 17, 135);
+    doc.text("Detailed Description of Service/Work", 50, 135);
+    doc.text("MZN", 170, 135);
+    doc.text(
+      new Date(viewingExpense.date).toISOString().split("T")[0],
+      17,
+      143
+    );
+    doc.text(viewingExpense.description, 50, 143, { maxWidth: 110 });
+    doc.text(viewingExpense.amount.toFixed(2), 170, 143);
+
+    // Add total and exchange rate
+    doc.rect(15, 171, 180, 20);
+    doc.text(`VAT (16%): 0.16`, 17, 177);
+    doc.text(`Total`, 150, 177);
+    doc.text(viewingExpense.amount.toFixed(2), 170, 177);
+    doc.text(`Total with VAT`, 130, 185);
+    doc.text((viewingExpense.amount * 1.16).toFixed(2), 170, 185);
+
+    // Add certificate
+    doc.setFillColor(240, 240, 240);
+    doc.rect(15, 193, 180, 8, "F");
+    doc.text("CERTIFICATE", 105, 199, { align: "center" });
+    doc.setFontSize(8);
+    doc.text(
+      "---I Certify the above amount is correct, and was incurred under the Authority quoted, that the service have been",
+      17,
+      207
+    );
+    doc.text(
+      "duly performed, that the rate/price charged is according to regulations/contract is fair and reasonable",
+      17,
+      213
+    );
+    doc.text(
+      "that the amount of ......................................................... Meticais",
+      17,
+      219
+    );
+    doc.text("may paid under the Classification quoted", 17, 225);
+
+    doc.line(140, 240, 190, 240); // Signature line
+    doc.text("Signature of GreenAgro", 140, 246);
+    doc.text("Director", 140, 252);
+
+    // Add current date at the bottom
+    const currentDate = new Date().toLocaleDateString();
+    doc.setFontSize(10);
+    doc.text(`Generated on: ${currentDate}`, 105, 280, { align: "center" });
 
     doc.save(`expense_voucher_${viewingExpense.id}.pdf`);
   };

@@ -9,7 +9,7 @@ export type ExpenseType = {
 };
 
 export type Expense = {
-  id?: number;
+  id: number;
   description: string;
   amount: number;
   date: string;
