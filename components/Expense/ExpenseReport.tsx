@@ -12,17 +12,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  PrismaClient,
-  Expense,
-  Category,
-  ExpenseType,
-  PaymentMethod,
-} from "@prisma/client";
+import { Expense, Category, ExpenseType } from "@prisma/client";
 import * as XLSX from "xlsx";
 import { useToast } from "@/hooks/use-toast";
-
-const prisma = new PrismaClient();
 
 type ExtendedExpense = Expense & {
   category: Category;
@@ -58,52 +50,47 @@ export default function ExpenseReport({
   const [expenses, setExpenses] = useState<ExtendedExpense[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [expenseTypes, setExpenseTypes] = useState<ExpenseType[]>([]);
-  // const [currencies, setCurrencies] = useState<Currency[]>([]);
   const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
+  const [filteredExpenseCount, setFilteredExpenseCount] = useState(0);
 
   useEffect(() => {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    setFilteredExpenseCount(filterExpenses(expenses).length);
+  }, [filters, expenses]);
+
   const fetchData = async () => {
+    setIsLoading(true);
     try {
-      const [fetchedExpenses, fetchedCategories, fetchedExpenseTypes] =
+      const [expensesResponse, categoriesResponse, expenseTypesResponse] =
         await Promise.all([
-          prisma.expense.findMany(),
-          prisma.category.findMany(),
-          prisma.expenseType.findMany(),
-          prisma.currency.findMany(),
+          fetch("/api/expenses"),
+          fetch("/api/categories"),
+          fetch("/api/expense-types"),
         ]);
 
-      const extendedExpenses: ExtendedExpense[] = fetchedExpenses.map(
-        (expense) => ({
-          ...expense,
-          category: fetchedCategories.find(
-            (c) => c.id === expense.categoryId
-          ) || {
-            id: 0,
-            name: "Unknown",
-            createdAt: new Date(),
-            updatedAt: new Date(),
-          },
-          expenseType: fetchedExpenseTypes.find(
-            (t) => t.id === expense.typeId
-          ) || {
-            id: 0,
-            name: "Unknown",
-            createdAt: new Date(),
-            updatedAt: new Date(),
-          },
-        })
-      );
+      const [fetchedExpenses, fetchedCategories, fetchedExpenseTypes] =
+        await Promise.all([
+          expensesResponse.json(),
+          categoriesResponse.json(),
+          expenseTypesResponse.json(),
+        ]);
 
-      setExpenses(extendedExpenses);
-      setCategories(fetchedCategories);
-      setExpenseTypes(fetchedExpenseTypes);
-      // setCurrencies(fetchedCurrencies);
+      setExpenses(fetchedExpenses);
+      setCategories(fetchedCategories.categories);
+      setExpenseTypes(fetchedExpenseTypes.expenseTypes);
     } catch (error) {
       console.error("Error fetching data:", error);
-      // Handle the error appropriately (e.g., show an error message to the user)
+      toast({
+        title: "Error",
+        description: "Failed to fetch data. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -113,16 +100,22 @@ export default function ExpenseReport({
 
   const filterExpenses = (expenses: ExtendedExpense[]): ExtendedExpense[] => {
     return expenses.filter((expense) => {
-      if (filters.startDate && expense.date < new Date(filters.startDate))
+      const expenseDate = new Date(expense.date);
+      if (filters.startDate && expenseDate < new Date(filters.startDate))
         return false;
-      if (filters.endDate && expense.date > new Date(filters.endDate))
+      if (filters.endDate && expenseDate > new Date(filters.endDate))
         return false;
       if (
         filters.categoryId &&
+        filters.categoryId !== "all" &&
         expense.categoryId !== parseInt(filters.categoryId)
       )
         return false;
-      if (filters.typeId && expense.typeId !== parseInt(filters.typeId))
+      if (
+        filters.typeId &&
+        filters.typeId !== "all" &&
+        expense.typeId !== parseInt(filters.typeId)
+      )
         return false;
       if (filters.minAmount && expense.amount < parseFloat(filters.minAmount))
         return false;
@@ -130,7 +123,8 @@ export default function ExpenseReport({
         return false;
       if (
         filters.paymentMethod &&
-        expense.PaymentMethod !== (filters.paymentMethod as PaymentMethod)
+        filters.paymentMethod !== "all" &&
+        expense.PaymentMethod !== filters.paymentMethod
       )
         return false;
       return true;
@@ -139,7 +133,7 @@ export default function ExpenseReport({
 
   const groupByCategory = (expenses: ExtendedExpense[]) => {
     return expenses.reduce((acc, expense) => {
-      const categoryName = expense.category.name;
+      const categoryName = expense.category?.name || "Uncategorized";
       if (!acc[categoryName]) {
         acc[categoryName] = 0;
       }
@@ -150,17 +144,19 @@ export default function ExpenseReport({
 
   const groupByPaymentMethod = (expenses: ExtendedExpense[]) => {
     return expenses.reduce((acc, expense) => {
-      if (!acc[expense.PaymentMethod]) {
-        acc[expense.PaymentMethod] = 0;
+      const method = expense.PaymentMethod || "Unspecified";
+      if (!acc[method]) {
+        acc[method] = 0;
       }
-      acc[expense.PaymentMethod] += expense.amount;
+      acc[method] += expense.amount;
       return acc;
     }, {} as Record<string, number>);
   };
 
   const groupByTime = (expenses: ExtendedExpense[]) => {
     return expenses.reduce((acc, expense) => {
-      const month = expense.date.toLocaleString("default", {
+      const date = new Date(expense.date);
+      const month = date.toLocaleString("default", {
         month: "long",
         year: "numeric",
       });
@@ -174,10 +170,11 @@ export default function ExpenseReport({
 
   const getTopVendors = (expenses: ExtendedExpense[], limit = 10) => {
     const vendorTotals = expenses.reduce((acc, expense) => {
-      if (!acc[expense.vendorPayee]) {
-        acc[expense.vendorPayee] = 0;
+      const vendor = expense.vendorPayee || "Unspecified";
+      if (!acc[vendor]) {
+        acc[vendor] = 0;
       }
-      acc[expense.vendorPayee] += expense.amount;
+      acc[vendor] += expense.amount;
       return acc;
     }, {} as Record<string, number>);
 
@@ -187,115 +184,117 @@ export default function ExpenseReport({
   };
 
   const generateExcel = async () => {
+    setIsLoading(true);
     const filteredExpenses = filterExpenses(expenses);
 
     if (filteredExpenses.length === 0) {
       toast({
-        title: "No Expenses found",
+        title: "No Expenses Found",
         description:
-          "No expenses found for the selected filters. Please adjust your filters and try again.",
+          "No expenses match the selected filters. Please adjust your filters and try again.",
         variant: "destructive",
       });
-
+      setIsLoading(false);
       return;
     }
 
-    const wb = XLSX.utils.book_new();
-
-    // Detailed Expenses Sheet
-    const wsExpenses = XLSX.utils.json_to_sheet(
-      filteredExpenses.map((e) => ({
-        ID: e.id,
-        Description: e.description,
-        Amount: e.amount,
-        Date: e.date.toISOString().split("T")[0],
-        Category: e.category.name,
-        Type: e.expenseType.name,
-        PaymentMethod: e.PaymentMethod,
-        VendorPayee: e.vendorPayee,
-        Location: e.expenseLocation,
-      }))
-    );
-    XLSX.utils.book_append_sheet(wb, wsExpenses, "Detailed Expenses");
-
-    // Category Summary
-    const categoryData = Object.entries(groupByCategory(filteredExpenses)).map(
-      ([category, total]) => ({ Category: category, Total: total })
-    );
-    const wsCategorySummary = XLSX.utils.json_to_sheet(categoryData);
-    XLSX.utils.sheet_add_aoa(
-      wsCategorySummary,
-      [["Expense Summary by Category"]],
-      { origin: "A1" }
-    );
-    XLSX.utils.book_append_sheet(wb, wsCategorySummary, "Category Summary");
-
-    // Time-based Analysis
-    const timeData = Object.entries(groupByTime(filteredExpenses)).map(
-      ([month, total]) => ({ Month: month, Total: total })
-    );
-    const wsTimeSummary = XLSX.utils.json_to_sheet(timeData);
-    XLSX.utils.sheet_add_aoa(wsTimeSummary, [["Expenses Over Time"]], {
-      origin: "A1",
-    });
-    XLSX.utils.book_append_sheet(wb, wsTimeSummary, "Time Analysis");
-
-    // Payment Method Analysis
-    const paymentData = Object.entries(
-      groupByPaymentMethod(filteredExpenses)
-    ).map(([method, total]) => ({ Method: method, Total: total }));
-    const wsPaymentSummary = XLSX.utils.json_to_sheet(paymentData);
-    XLSX.utils.sheet_add_aoa(
-      wsPaymentSummary,
-      [["Expenses by Payment Method"]],
-      { origin: "A1" }
-    );
-    XLSX.utils.book_append_sheet(wb, wsPaymentSummary, "Payment Method");
-
-    // Top Vendors
-    const topVendorsData = getTopVendors(filteredExpenses).map(
-      ([vendor, total]) => ({ Vendor: vendor, Total: total })
-    );
-    const wsTopVendors = XLSX.utils.json_to_sheet(topVendorsData);
-    XLSX.utils.sheet_add_aoa(wsTopVendors, [["Top 10 Vendors by Expense"]], {
-      origin: "A1",
-    });
-    XLSX.utils.book_append_sheet(wb, wsTopVendors, "Top Vendors");
-
-    // Summary Statistics
-    const totalExpenses = filteredExpenses.reduce(
-      (sum, exp) => sum + exp.amount,
-      0
-    );
-    const averageExpense = totalExpenses / filteredExpenses.length;
-    const summaryData = [
-      { Metric: "Total Expenses", Value: totalExpenses },
-      { Metric: "Number of Expenses", Value: filteredExpenses.length },
-      { Metric: "Average Expense Amount", Value: averageExpense },
-    ];
-    const wsSummaryStats = XLSX.utils.json_to_sheet(summaryData);
-    XLSX.utils.sheet_add_aoa(wsSummaryStats, [["Summary Statistics"]], {
-      origin: "A1",
-    });
-    XLSX.utils.book_append_sheet(wb, wsSummaryStats, "Summary Stats");
-
-    // XLSX.writeFile(wb, "Comprehensive_Expense_Report.xlsx");
-
-    // Generate Excel file
-    const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
-    const blob = new Blob([excelBuffer], {
-      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    });
-
-    const fileName = `Expense_Report_${new Date()
-      .toISOString()
-      .replace(/:/g, "-")}.xlsx`;
-    const formData = new FormData();
-    formData.append("file", blob, fileName);
-    formData.append("name", fileName);
-    formData.append("description", "Comprehensive expense report");
-
     try {
+      const wb = XLSX.utils.book_new();
+
+      // Detailed Expenses Sheet
+      const wsExpenses = XLSX.utils.json_to_sheet(
+        filteredExpenses.map((e) => ({
+          ID: e.id,
+          Description: e.description,
+          Amount: e.amount,
+          Date: formatDate(e.date),
+          Category:
+            categories.find((c) => c.id === e.categoryId)?.name ??
+            "Uncategorized",
+          Type:
+            expenseTypes.find((t) => t.id === e.typeId)?.name ?? "Unspecified",
+          PaymentMethod: e.PaymentMethod ?? "Unspecified",
+          VendorPayee: e.vendorPayee ?? "",
+          Location: e.expenseLocation ?? "",
+        }))
+      );
+      XLSX.utils.book_append_sheet(wb, wsExpenses, "Detailed Expenses");
+
+      // Category Summary
+      const categoryData = Object.entries(
+        groupByCategory(filteredExpenses)
+      ).map(([category, total]) => ({ Category: category, Total: total }));
+      const wsCategorySummary = XLSX.utils.json_to_sheet(categoryData);
+      XLSX.utils.sheet_add_aoa(
+        wsCategorySummary,
+        [["Expense Summary by Category"]],
+        { origin: "A1" }
+      );
+      XLSX.utils.book_append_sheet(wb, wsCategorySummary, "Category Summary");
+
+      // Time-based Analysis
+      const timeData = Object.entries(groupByTime(filteredExpenses)).map(
+        ([month, total]) => ({ Month: month, Total: total })
+      );
+      const wsTimeSummary = XLSX.utils.json_to_sheet(timeData);
+      XLSX.utils.sheet_add_aoa(wsTimeSummary, [["Expenses Over Time"]], {
+        origin: "A1",
+      });
+      XLSX.utils.book_append_sheet(wb, wsTimeSummary, "Time Analysis");
+
+      // Payment Method Analysis
+      const paymentData = Object.entries(
+        groupByPaymentMethod(filteredExpenses)
+      ).map(([method, total]) => ({ Method: method, Total: total }));
+      const wsPaymentSummary = XLSX.utils.json_to_sheet(paymentData);
+      XLSX.utils.sheet_add_aoa(
+        wsPaymentSummary,
+        [["Expenses by Payment Method"]],
+        { origin: "A1" }
+      );
+      XLSX.utils.book_append_sheet(wb, wsPaymentSummary, "Payment Method");
+
+      // Top Vendors
+      const topVendorsData = getTopVendors(filteredExpenses).map(
+        ([vendor, total]) => ({ Vendor: vendor, Total: total })
+      );
+      const wsTopVendors = XLSX.utils.json_to_sheet(topVendorsData);
+      XLSX.utils.sheet_add_aoa(wsTopVendors, [["Top 10 Vendors by Expense"]], {
+        origin: "A1",
+      });
+      XLSX.utils.book_append_sheet(wb, wsTopVendors, "Top Vendors");
+
+      // Summary Statistics
+      const totalExpenses = filteredExpenses.reduce(
+        (sum, exp) => sum + exp.amount,
+        0
+      );
+      const averageExpense = totalExpenses / filteredExpenses.length;
+      const summaryData = [
+        { Metric: "Total Expenses", Value: totalExpenses },
+        { Metric: "Number of Expenses", Value: filteredExpenses.length },
+        { Metric: "Average Expense Amount", Value: averageExpense },
+      ];
+      const wsSummaryStats = XLSX.utils.json_to_sheet(summaryData);
+      XLSX.utils.sheet_add_aoa(wsSummaryStats, [["Summary Statistics"]], {
+        origin: "A1",
+      });
+      XLSX.utils.book_append_sheet(wb, wsSummaryStats, "Summary Stats");
+
+      // Generate Excel file
+      const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+      const blob = new Blob([excelBuffer], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+
+      const fileName = `Expense_Report_${new Date()
+        .toISOString()
+        .replace(/:/g, "-")}.xlsx`;
+      const formData = new FormData();
+      formData.append("file", blob, fileName);
+      formData.append("name", fileName);
+      formData.append("description", "Comprehensive expense report");
+
       const response = await fetch("/api/reports", {
         method: "POST",
         body: formData,
@@ -322,10 +321,24 @@ export default function ExpenseReport({
     } catch (error) {
       console.error("Error generating report:", error);
       toast({
-        title: "Failed to save the report. Please try again!",
-        className: "bg-red-500 text-white",
+        title: "Failed to generate the report",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
+  };
+
+  const formatDate = (date: string | Date | undefined): string => {
+    if (typeof date === "string") {
+      return date.split("T")[0];
+    }
+    if (date instanceof Date) {
+      return date.toISOString().split("T")[0];
+    }
+    console.error("Invalid date format:", date);
+    return "";
   };
 
   return (
@@ -366,7 +379,7 @@ export default function ExpenseReport({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Categories</SelectItem>
-                {categories.map((category) => (
+                {categories?.map((category) => (
                   <SelectItem key={category.id} value={category.id.toString()}>
                     {category.name}
                   </SelectItem>
@@ -430,11 +443,15 @@ export default function ExpenseReport({
             </Select>
           </div>
         </div>
+        <div className="mb-4">
+          <p>Matching expenses: {filteredExpenseCount}</p>
+        </div>
         <Button
           onClick={generateExcel}
           className="w-full mb-6 bg-green-500 hover:bg-green-600 hover:text-white hover:shadow-md"
+          disabled={isLoading || filteredExpenseCount === 0}
         >
-          Generate Comprehensive Excel Report
+          {isLoading ? "Generating..." : "Generate Comprehensive Excel Report"}
         </Button>
       </CardContent>
     </Card>
