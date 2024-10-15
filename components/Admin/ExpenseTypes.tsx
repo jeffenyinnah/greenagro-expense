@@ -55,8 +55,9 @@ export default function ExpenseTypesComponent() {
     } catch (error) {
       console.error("Error fetching expense types:", error);
       toast({
-        title: "Error",
-        description: "Failed to fetch expense types. Please try again.",
+        title: "Erro",
+        description:
+          "Falha ao obter os tipos de despesas. Por favor, tente novamente.",
         variant: "destructive",
       });
     } finally {
@@ -84,7 +85,7 @@ export default function ExpenseTypesComponent() {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to save expense type");
+        throw new Error("Falha ao gravar o tipo de despesa");
       }
 
       const { expenseType: savedExpenseType } = await response.json();
@@ -96,24 +97,25 @@ export default function ExpenseTypesComponent() {
           )
         );
         toast({
-          title: "Success",
-          description: "Expense type updated successfully",
+          title: "Sucesso",
+          description: "Tipo de despesa atualizado com sucesso",
           variant: "default",
           className: "bg-green-600 text-white",
         });
       } else {
         setExpenseTypes([...expenseTypes, savedExpenseType]);
         toast({
-          title: "Success",
-          description: "New expense type added successfully",
+          title: "Sucesso",
+          description: "Novo tipo de despesa adicionado com sucesso",
           variant: "default",
           className: "bg-green-600 text-white",
         });
       }
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to save expense type. Please try again.",
+        title: "Erro",
+        description:
+          "Falha ao gravar o tipo de despesa. Por favor, tente novamente.",
         variant: "destructive",
       });
     } finally {
@@ -134,21 +136,21 @@ export default function ExpenseTypesComponent() {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to delete expense type");
+        throw new Error("Falha ao apagar o tipo de despesa");
       }
 
       setExpenseTypes(expenseTypes.filter((type) => type.id !== id));
       toast({
-        title: "Success",
-        description: "Expense type deleted successfully",
+        title: "Sucesso",
+        description: "Tipo de despesa apagado com sucesso",
         variant: "default",
         className: "bg-green-600 text-white",
       });
     } catch (error) {
       console.error("Error deleting expense type:", error);
       toast({
-        title: "Error",
-        description: "Failed to delete expense type. Please try again.",
+        title: "Erro",
+        description: "Falha ao apagar o tipo de despesa. Tente novamente.",
         variant: "destructive",
       });
     }
@@ -157,7 +159,7 @@ export default function ExpenseTypesComponent() {
   return (
     <Card className="w-full">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-2xl font-bold">Expense Types</CardTitle>
+        <CardTitle className="text-2xl font-bold">Tipos de despesas</CardTitle>
         <Dialog
           open={isDialogOpen}
           onOpenChange={(open) => {
@@ -167,21 +169,21 @@ export default function ExpenseTypesComponent() {
         >
           <DialogTrigger asChild>
             <Button className="bg-green-600 hover:bg-green-700">
-              <Plus className="mr-2 h-4 w-4" /> Add Expense Type
+              <Plus className="mr-2 h-4 w-4" /> Adicionar tipo de despesa
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[425px] bg-white">
             <DialogHeader>
               <DialogTitle className="text-green-600">
                 {editingExpenseType
-                  ? "Edit Expense Type"
-                  : "Add New Expense Type"}
+                  ? "Editar tipo de despesa"
+                  : "Adicionar novo tipo de despesa"}
               </DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <Label htmlFor="name" className="text-black">
-                  Expense Type Name
+                  Nome do tipo de despesa
                 </Label>
                 <Input
                   id="name"
@@ -196,8 +198,8 @@ export default function ExpenseTypesComponent() {
                 className="w-full bg-green-600 hover:bg-green-700"
               >
                 {editingExpenseType
-                  ? "Update Expense Type"
-                  : "Create Expense Type"}
+                  ? "Atualizar tipo de despesas"
+                  : "Criar tipo de despesa"}
               </Button>
             </form>
           </DialogContent>
@@ -208,21 +210,24 @@ export default function ExpenseTypesComponent() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[250px]">Expense Type Name</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead className="w-[250px]">
+                  Nome do tipo de despesa
+                </TableHead>
+                <TableHead className="text-right">Acções</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {isLoading ? (
                 <TableRow>
                   <TableCell colSpan={2} className="text-center">
-                    Fetching expense types...
+                    Obter tipos de despesas...
                   </TableCell>
                 </TableRow>
               ) : expenseTypes.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={2} className="text-center">
-                    No expense types found. Please add one.
+                    Não foram encontrados tipos de despesas. Por favor, adicione
+                    um.
                   </TableCell>
                 </TableRow>
               ) : (

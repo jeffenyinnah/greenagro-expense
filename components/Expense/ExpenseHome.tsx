@@ -85,7 +85,7 @@ export default function ExpenseManagement() {
         setCategories(categoriesData.categories);
         setExpenseTypes(expenseTypesData.expenseTypes);
       } catch (err) {
-        setError("Error fetching data. Please refresh the page.");
+        setError("Erro na obtenção de dados. Por favor, actualize a página.");
       } finally {
         setIsLoading(false);
       }
@@ -183,7 +183,7 @@ export default function ExpenseManagement() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to add expense");
+        throw new Error(errorData.error || "Falha ao adicionar despesa");
       }
 
       const addedExpense = await response.json();
@@ -192,15 +192,15 @@ export default function ExpenseManagement() {
       setIsDialogOpen(false);
       setError(null);
       toast({
-        title: "Expense Added",
-        description: "Your expense was successfully added.",
+        title: "Despesa adicionada",
+        description: "A sua despesa foi adicionada com sucesso.",
         className: "bg-green-500 text-white",
       });
     } catch (err) {
-      console.error("Error adding expense:", err);
+      console.error("Erro ao adicionar despesas:", err);
       toast({
-        title: "Expense not Added",
-        description: "Error adding expense. Please try again.",
+        title: "Despesa não adicionada",
+        description: "Erro ao adicionar despesas. Por favor, tente novamente.",
         variant: "destructive",
       });
     }
@@ -211,8 +211,8 @@ export default function ExpenseManagement() {
     file: File | null
   ) => {
     if (updatedExpense.id === undefined) {
-      console.error("Cannot update expense without an id");
-      setError("Invalid expense data: missing id");
+      console.error("Não é possível atualizar despesas sem um ID");
+      setError("Dados de despesas inválidos: id em falta");
       return;
     }
     try {
@@ -259,15 +259,15 @@ export default function ExpenseManagement() {
       setIsDialogOpen(false);
       setEditingExpense(undefined);
       toast({
-        title: "Expense Updated",
-        description: "Your expense was successfully Updated.",
+        title: "Despesa actualizada",
+        description: "A sua despesa foi actualizada com sucesso.",
         className: "bg-green-500 text-white",
       });
     } catch (err) {
-      console.error("Error updating expense:", err);
+      console.error("Erro ao atualizar despesas:", err);
       toast({
-        title: "Error occured",
-        description: "Error updating expense",
+        title: "Ocorreu um erro",
+        description: "Erro ao atualizar despesas",
         variant: "destructive",
       });
     }
@@ -280,7 +280,7 @@ export default function ExpenseManagement() {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to delete expense");
+        throw new Error("Falha ao apagar a despesa");
       }
 
       setExpenses((prevExpenses) =>
@@ -290,14 +290,14 @@ export default function ExpenseManagement() {
         prevFiltered.filter((exp) => exp.id !== id)
       );
       toast({
-        title: "Expense Deleted",
-        description: "Your expense was successfully Deleted.",
+        title: "Despesa Eliminado",
+        description: "A sua despesa foi Eliminada com sucesso.",
         variant: "destructive",
       });
     } catch (err) {
       toast({
-        title: "Error occured",
-        description: "Error deleting expense. Please try again.",
+        title: "Ocorreu um erro",
+        description: "Erro ao eliminar despesas. Por favor, tente novamente.",
         variant: "destructive",
       });
     }
@@ -325,17 +325,17 @@ export default function ExpenseManagement() {
   };
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <div>Carregar...</div>;
   }
 
   if (error) {
-    return <div>Error: {error}</div>;
+    return <div>Erro: {error}</div>;
   }
 
   return (
     <Card className="w-full">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-2xl font-bold">Expense Management</CardTitle>
+        <CardTitle className="text-2xl font-bold">Gestão de Despesas</CardTitle>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button
@@ -345,7 +345,7 @@ export default function ExpenseManagement() {
                 setIsDialogOpen(true);
               }}
             >
-              <Plus className="mr-2 h-4 w-4" /> Add Expense
+              <Plus className="mr-2 h-4 w-4" /> Adicionar despesa
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[600px] bg-white">
@@ -367,7 +367,7 @@ export default function ExpenseManagement() {
         <div className="mb-4">
           <Input
             type="text"
-            placeholder="Search expenses..."
+            placeholder="Pesquisa de despesas ..."
             value={searchTerm}
             onChange={handleSearch}
           />

@@ -93,21 +93,21 @@ export default function ExpenseForm({
     try {
       await onSubmit(submissionData, file);
     } catch (err) {
-      setError("Error submitting expense. Please try again.");
+      setError("Erro ao enviar a despesa. Por favor, tente novamente.");
     } finally {
       setIsLoading(false);
     }
   };
 
   if (error) {
-    return <div>Error: {error}</div>;
+    return <div>Erro: {error}</div>;
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 bg-white text-black">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <Label htmlFor="description">Description</Label>
+          <Label htmlFor="description">Descrição</Label>
           <Input
             id="description"
             name="description"
@@ -117,7 +117,7 @@ export default function ExpenseForm({
           />
         </div>
         <div>
-          <Label htmlFor="amount">Amount</Label>
+          <Label htmlFor="amount">Montante</Label>
           <Input
             id="amount"
             name="amount"
@@ -129,7 +129,7 @@ export default function ExpenseForm({
           />
         </div>
         <div>
-          <Label htmlFor="date">Date</Label>
+          <Label htmlFor="date">Data</Label>
           <Input
             id="date"
             name="date"
@@ -140,14 +140,14 @@ export default function ExpenseForm({
           />
         </div>
         <div>
-          <Label htmlFor="categoryId">Category</Label>
+          <Label htmlFor="categoryId">Categoria</Label>
           <Select
             name="categoryId"
             value={formData.categoryId.toString()}
             onValueChange={(value) => handleSelectChange("categoryId", value)}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Select a category" />
+              <SelectValue placeholder="Selecione uma categoria" />
             </SelectTrigger>
             <SelectContent>
               {Array.isArray(categories) && categories.length > 0 ? (
@@ -158,21 +158,21 @@ export default function ExpenseForm({
                 ))
               ) : (
                 <SelectItem value="" disabled>
-                  No categories available
+                  Não há categorias disponíveis
                 </SelectItem>
               )}
             </SelectContent>
           </Select>
         </div>
         <div>
-          <Label htmlFor="typeId">Expense Type</Label>
+          <Label htmlFor="typeId">Tipo de despesas</Label>
           <Select
             name="typeId"
             value={formData.typeId.toString()}
             onValueChange={(value) => handleSelectChange("typeId", value)}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Select an expense type" />
+              <SelectValue placeholder="Selecione um tipo de despesa" />
             </SelectTrigger>
             <SelectContent>
               {Array.isArray(expenseTypes) && expenseTypes.length > 0 ? (
@@ -183,14 +183,14 @@ export default function ExpenseForm({
                 ))
               ) : (
                 <SelectItem value="" disabled>
-                  No expense types available
+                  Não há tipos de despesas disponíveis
                 </SelectItem>
               )}
             </SelectContent>
           </Select>
         </div>
         <div>
-          <Label htmlFor="PaymentMethod">Payment Method</Label>
+          <Label htmlFor="PaymentMethod">Método de pagamento</Label>
           <Select
             name="PaymentMethod"
             value={formData.PaymentMethod}
@@ -199,7 +199,7 @@ export default function ExpenseForm({
             }
           >
             <SelectTrigger>
-              <SelectValue placeholder="Select a payment method" />
+              <SelectValue placeholder="Selecione um método de pagamento" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="CASH">Cash</SelectItem>
@@ -208,7 +208,7 @@ export default function ExpenseForm({
           </Select>
         </div>
         <div>
-          <Label htmlFor="vendorPayee">Vendor/Payee</Label>
+          <Label htmlFor="vendorPayee">Fornecedor/Destinatário</Label>
           <Input
             id="vendorPayee"
             name="vendorPayee"
@@ -217,7 +217,7 @@ export default function ExpenseForm({
           />
         </div>
         <div>
-          <Label htmlFor="expenseLocation">Expense Location</Label>
+          <Label htmlFor="expenseLocation">Localização da despesa</Label>
           <Input
             id="expenseLocation"
             name="expenseLocation"
@@ -226,7 +226,7 @@ export default function ExpenseForm({
           />
         </div>
         <div>
-          <Label htmlFor="receiptUpload">Receipt Upload</Label>
+          <Label htmlFor="receiptUpload">Carregar recibo</Label>
           <Input
             id="receiptUpload"
             name="receiptUpload"
@@ -242,10 +242,10 @@ export default function ExpenseForm({
         disabled={isLoading}
       >
         {isLoading
-          ? "Submitting..."
+          ? "Enviar..."
           : expense
-          ? "Update Expense"
-          : "Add Expense"}
+          ? "Atualizar despesas"
+          : "Adicionar despesas"}
       </Button>
     </form>
   );

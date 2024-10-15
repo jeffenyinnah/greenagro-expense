@@ -56,8 +56,8 @@ export default function CategoriesComponent() {
     } catch (error) {
       console.error("Failed to fetch categories", error);
       toast({
-        title: "Error",
-        description: "Failed to fetch categories. Please try again.",
+        title: "Erro",
+        description: "Falha ao obter categorias. Por favor, tente novamente.",
         variant: "destructive",
       });
     } finally {
@@ -85,21 +85,21 @@ export default function CategoriesComponent() {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to save category");
+        throw new Error("Falha ao salvar a categoria");
       }
 
       // const savedCategory = await response.json();
 
       if (editingCategory) {
         toast({
-          title: "Category updated",
-          description: "The category has been updated successfully",
+          title: "Categoria actualizada",
+          description: "A categoria foi actualizada com sucesso",
           className: "bg-green-500 text-white",
         });
       } else {
         toast({
-          title: "Category added",
-          description: "The new category has been added successfully",
+          title: "Categoria adicionada",
+          description: "A nova categoria foi adicionada com sucesso",
           className: "bg-green-500 text-white",
         });
       }
@@ -110,8 +110,9 @@ export default function CategoriesComponent() {
     } catch (error) {
       console.error("Failed to save category", error);
       toast({
-        title: "Error",
-        description: "Failed to save category. Please try again.",
+        title: "Erro",
+        description:
+          "Falha ao guardar a categoria. Por favor, tente novamente.",
         variant: "destructive",
       });
     }
@@ -129,12 +130,12 @@ export default function CategoriesComponent() {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to delete category");
+        throw new Error("Falha ao apagar a categoria");
       }
 
       toast({
-        title: "Category deleted",
-        description: "The category has been deleted successfully",
+        title: "Categoria apagada",
+        description: "A categoria foi eliminada com sucesso",
         className: "bg-green-500 text-white",
       });
 
@@ -142,8 +143,8 @@ export default function CategoriesComponent() {
     } catch (error) {
       console.error("Failed to delete category", error);
       toast({
-        title: "Error",
-        description: "Failed to delete category. Please try again.",
+        title: "Erro",
+        description: "Falha ao apagar a categoria. Por favor, tente novamente.",
         variant: "destructive",
       });
     }
@@ -152,7 +153,7 @@ export default function CategoriesComponent() {
   return (
     <Card className="w-full">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-2xl font-bold">Categories</CardTitle>
+        <CardTitle className="text-2xl font-bold">Categorias</CardTitle>
         <Dialog
           open={isDialogOpen}
           onOpenChange={(open) => {
@@ -162,7 +163,7 @@ export default function CategoriesComponent() {
         >
           <DialogTrigger asChild>
             <Button className="bg-green-600 hover:bg-green-700">
-              <Plus className="mr-2 h-4 w-4" /> Add Category
+              <Plus className="mr-2 h-4 w-4" /> Adicionar categoria
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[425px] bg-white">
@@ -174,7 +175,7 @@ export default function CategoriesComponent() {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <Label htmlFor="name" className="text-black">
-                  Category Name
+                  Nome da categoria
                 </Label>
                 <Input
                   id="name"
@@ -188,7 +189,7 @@ export default function CategoriesComponent() {
                 type="submit"
                 className="w-full bg-green-600 hover:bg-green-700"
               >
-                {editingCategory ? "Update Category" : "Create Category"}
+                {editingCategory ? "Atualizar categoria" : "Criar categoria"}
               </Button>
             </form>
           </DialogContent>
@@ -199,21 +200,21 @@ export default function CategoriesComponent() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[250px]">Category Name</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead className="w-[250px]">Nome da Categoria</TableHead>
+                <TableHead className="text-right">Acções</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {isLoading ? (
                 <TableRow>
                   <TableCell colSpan={2} className="text-center">
-                    Fetching categories...
+                    Obter categorias...
                   </TableCell>
                 </TableRow>
               ) : categories.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={2} className="text-center">
-                    No categories found
+                    Não foram encontradas categorias
                   </TableCell>
                 </TableRow>
               ) : (

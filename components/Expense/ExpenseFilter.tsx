@@ -65,7 +65,7 @@ export default function ExpenseFilter({
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* Date and Amount inputs remain unchanged */}
         <div>
-          <Label htmlFor="startDate">Start Date</Label>
+          <Label htmlFor="startDate">Data de início</Label>
           <Input
             type="date"
             id="startDate"
@@ -75,7 +75,7 @@ export default function ExpenseFilter({
           />
         </div>
         <div>
-          <Label htmlFor="endDate">End Date</Label>
+          <Label htmlFor="endDate">Data de fim</Label>
           <Input
             type="date"
             id="endDate"
@@ -85,7 +85,7 @@ export default function ExpenseFilter({
           />
         </div>
         <div>
-          <Label htmlFor="minAmount">Min Amount</Label>
+          <Label htmlFor="minAmount">Montante mínimo</Label>
           <Input
             type="number"
             id="minAmount"
@@ -95,7 +95,7 @@ export default function ExpenseFilter({
           />
         </div>
         <div>
-          <Label htmlFor="maxAmount">Max Amount</Label>
+          <Label htmlFor="maxAmount">Montante máximo</Label>
           <Input
             type="number"
             id="maxAmount"
@@ -105,17 +105,17 @@ export default function ExpenseFilter({
           />
         </div>
         <div>
-          <Label htmlFor="categoryId">Category</Label>
+          <Label htmlFor="categoryId">Categoria</Label>
           <Select
             name="categoryId"
             value={filters.categoryId}
             onValueChange={(value) => handleSelectChange("categoryId", value)}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Select a category" />
+              <SelectValue placeholder="Selecione uma categoria" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Categories</SelectItem>
+              <SelectItem value="all">Todas as categorias</SelectItem>
               {categories && categories.length > 0 ? (
                 categories.map((category) => (
                   <SelectItem key={category.id} value={category.id.toString()}>
@@ -124,24 +124,24 @@ export default function ExpenseFilter({
                 ))
               ) : (
                 <SelectItem value="none" disabled>
-                  No categories available
+                  Não há categorias disponíveis
                 </SelectItem>
               )}
             </SelectContent>
           </Select>
         </div>
         <div>
-          <Label htmlFor="typeId">Expense Type</Label>
+          <Label htmlFor="typeId">Tipo de despesas</Label>
           <Select
             name="typeId"
             value={filters.typeId}
             onValueChange={(value) => handleSelectChange("typeId", value)}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Select an expense type" />
+              <SelectValue placeholder="Selecione um tipo de despesa" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Types</SelectItem>
+              <SelectItem value="all">Todos os tipos</SelectItem>
               {Array.isArray(expenseTypes) && expenseTypes.length > 0 ? (
                 expenseTypes.map((type) => (
                   <SelectItem key={type.id} value={type.id.toString()}>
@@ -150,14 +150,14 @@ export default function ExpenseFilter({
                 ))
               ) : (
                 <SelectItem value="none" disabled>
-                  No expense types available
+                  Não existem tipos de despesa disponíveis
                 </SelectItem>
               )}
             </SelectContent>
           </Select>
         </div>
         <div>
-          <Label htmlFor="paymentMethod">Payment Method</Label>
+          <Label htmlFor="paymentMethod">Modo de pagamento</Label>
           <Select
             name="paymentMethod"
             value={filters.paymentMethod}
@@ -166,10 +166,10 @@ export default function ExpenseFilter({
             }
           >
             <SelectTrigger>
-              <SelectValue placeholder="Select a payment method" />
+              <SelectValue placeholder="Selecione um método de pagamento" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Methods</SelectItem>
+              <SelectItem value="all">Todos os métodos</SelectItem>
               <SelectItem value="CASH">Cash</SelectItem>
               <SelectItem value="TRANSFER">Transfer</SelectItem>
             </SelectContent>
@@ -177,7 +177,7 @@ export default function ExpenseFilter({
         </div>
       </div>
       <Button onClick={handleClearFilters} variant="outline" className="w-full">
-        Clear Filters
+        Limpar filtros
       </Button>
     </div>
   );

@@ -54,7 +54,7 @@ export default function GeneratedReports({
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle className="text-2xl font-bold">Generated Reports</CardTitle>
+        <CardTitle className="text-2xl font-bold">Relatórios gerados</CardTitle>
       </CardHeader>
       <CardContent>
         {reports.map((report) => (
@@ -62,7 +62,7 @@ export default function GeneratedReports({
             <h3 className="text-lg font-semibold">{report.name}</h3>
             <p className="text-sm text-gray-500">{report.description}</p>
             <p className="text-sm text-gray-500">
-              Created: {new Date(report.createdAt).toLocaleString()}
+              Criado: {new Date(report.createdAt).toLocaleString()}
             </p>
             <div className="mt-2">
               <Button
@@ -71,13 +71,13 @@ export default function GeneratedReports({
                 }
                 className="mr-2"
               >
-                Download
+                Descarregar
               </Button>
               <Button
                 onClick={() => handleDelete(report.id)}
                 variant="destructive"
               >
-                Delete
+                Apagar
               </Button>
             </div>
           </div>

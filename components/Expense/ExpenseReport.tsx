@@ -85,8 +85,8 @@ export default function ExpenseReport({
     } catch (error) {
       console.error("Error fetching data:", error);
       toast({
-        title: "Error",
-        description: "Failed to fetch data. Please try again.",
+        title: "Erro",
+        description: "Falha ao obter dados. Por favor, tente novamente.",
         variant: "destructive",
       });
     } finally {
@@ -189,9 +189,9 @@ export default function ExpenseReport({
 
     if (filteredExpenses.length === 0) {
       toast({
-        title: "No Expenses Found",
+        title: "Nenhuma despesa encontrada",
         description:
-          "No expenses match the selected filters. Please adjust your filters and try again.",
+          "Nenhuma despesa corresponde aos filtros selecionados. Ajuste os seus filtros e tente novamente.",
         variant: "destructive",
       });
       setIsLoading(false);
@@ -218,7 +218,7 @@ export default function ExpenseReport({
           Location: e.expenseLocation ?? "",
         }))
       );
-      XLSX.utils.book_append_sheet(wb, wsExpenses, "Detailed Expenses");
+      XLSX.utils.book_append_sheet(wb, wsExpenses, "Despesas detalhadas");
 
       // Category Summary
       const categoryData = Object.entries(
@@ -227,20 +227,28 @@ export default function ExpenseReport({
       const wsCategorySummary = XLSX.utils.json_to_sheet(categoryData);
       XLSX.utils.sheet_add_aoa(
         wsCategorySummary,
-        [["Expense Summary by Category"]],
+        [["Resumo das despesas por categoria"]],
         { origin: "A1" }
       );
-      XLSX.utils.book_append_sheet(wb, wsCategorySummary, "Category Summary");
+      XLSX.utils.book_append_sheet(
+        wb,
+        wsCategorySummary,
+        "Resumo da categoria"
+      );
 
       // Time-based Analysis
       const timeData = Object.entries(groupByTime(filteredExpenses)).map(
         ([month, total]) => ({ Month: month, Total: total })
       );
       const wsTimeSummary = XLSX.utils.json_to_sheet(timeData);
-      XLSX.utils.sheet_add_aoa(wsTimeSummary, [["Expenses Over Time"]], {
-        origin: "A1",
-      });
-      XLSX.utils.book_append_sheet(wb, wsTimeSummary, "Time Analysis");
+      XLSX.utils.sheet_add_aoa(
+        wsTimeSummary,
+        [["Despesas ao longo do tempo"]],
+        {
+          origin: "A1",
+        }
+      );
+      XLSX.utils.book_append_sheet(wb, wsTimeSummary, "Análise do tempo");
 
       // Payment Method Analysis
       const paymentData = Object.entries(
@@ -249,20 +257,24 @@ export default function ExpenseReport({
       const wsPaymentSummary = XLSX.utils.json_to_sheet(paymentData);
       XLSX.utils.sheet_add_aoa(
         wsPaymentSummary,
-        [["Expenses by Payment Method"]],
+        [["Despesas por método de pagamento"]],
         { origin: "A1" }
       );
-      XLSX.utils.book_append_sheet(wb, wsPaymentSummary, "Payment Method");
+      XLSX.utils.book_append_sheet(wb, wsPaymentSummary, "Método de pagamento");
 
       // Top Vendors
       const topVendorsData = getTopVendors(filteredExpenses).map(
         ([vendor, total]) => ({ Vendor: vendor, Total: total })
       );
       const wsTopVendors = XLSX.utils.json_to_sheet(topVendorsData);
-      XLSX.utils.sheet_add_aoa(wsTopVendors, [["Top 10 Vendors by Expense"]], {
-        origin: "A1",
-      });
-      XLSX.utils.book_append_sheet(wb, wsTopVendors, "Top Vendors");
+      XLSX.utils.sheet_add_aoa(
+        wsTopVendors,
+        [["Os 10 maiores fornecedores por despesa"]],
+        {
+          origin: "A1",
+        }
+      );
+      XLSX.utils.book_append_sheet(wb, wsTopVendors, "Principais fornecedores");
 
       // Summary Statistics
       const totalExpenses = filteredExpenses.reduce(
@@ -271,15 +283,19 @@ export default function ExpenseReport({
       );
       const averageExpense = totalExpenses / filteredExpenses.length;
       const summaryData = [
-        { Metric: "Total Expenses", Value: totalExpenses },
-        { Metric: "Number of Expenses", Value: filteredExpenses.length },
-        { Metric: "Average Expense Amount", Value: averageExpense },
+        { Metric: "Total das despesas", Value: totalExpenses },
+        { Metric: "Número de despesas", Value: filteredExpenses.length },
+        { Metric: "Montante médio das despesas", Value: averageExpense },
       ];
       const wsSummaryStats = XLSX.utils.json_to_sheet(summaryData);
-      XLSX.utils.sheet_add_aoa(wsSummaryStats, [["Summary Statistics"]], {
+      XLSX.utils.sheet_add_aoa(wsSummaryStats, [["Estatísticas resumidas"]], {
         origin: "A1",
       });
-      XLSX.utils.book_append_sheet(wb, wsSummaryStats, "Summary Stats");
+      XLSX.utils.book_append_sheet(
+        wb,
+        wsSummaryStats,
+        "Resumo das estatísticas"
+      );
 
       // Generate Excel file
       const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
@@ -303,8 +319,8 @@ export default function ExpenseReport({
       if (response.ok) {
         const newReport = await response.json();
         toast({
-          title: "Report generated and saved successfully!",
-          description: `Report ID: ${newReport.id}`,
+          title: "Relatório gerado e gravado com sucesso!",
+          description: `ID do relatório: ${newReport.id}`,
           className: "bg-green-500 text-white",
         });
         onReportGenerated();
@@ -313,16 +329,14 @@ export default function ExpenseReport({
         window.open(newReport.fileUrl, "_blank");
       } else {
         const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to save the report");
+        throw new Error(errorData.error || "Falha ao gravar o relatório");
       }
     } catch (error) {
       console.error("Error generating report:", error);
       toast({
-        title: "Failed to generate the report",
+        title: "Falha ao gerar o relatório",
         description:
-          error instanceof Error
-            ? error.message
-            : "An unexpected error occurred",
+          error instanceof Error ? error.message : "Ocorreu um erro inesperado",
         variant: "destructive",
       });
     } finally {
@@ -344,14 +358,12 @@ export default function ExpenseReport({
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle className="text-2xl font-bold">
-          Generate Comprehensive Expense Report
-        </CardTitle>
+        <CardTitle className="text-2xl font-bold">Gerar Relatório</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
           <div>
-            <Label htmlFor="startDate">Start Date</Label>
+            <Label htmlFor="startDate">Data de início</Label>
             <Input
               type="date"
               id="startDate"
@@ -360,7 +372,7 @@ export default function ExpenseReport({
             />
           </div>
           <div>
-            <Label htmlFor="endDate">End Date</Label>
+            <Label htmlFor="endDate">Data de fim</Label>
             <Input
               type="date"
               id="endDate"
@@ -369,16 +381,16 @@ export default function ExpenseReport({
             />
           </div>
           <div>
-            <Label htmlFor="category">Category</Label>
+            <Label htmlFor="category">Categoria</Label>
             <Select
               value={filters.categoryId}
               onValueChange={(value) => handleFilterChange("categoryId", value)}
             >
               <SelectTrigger id="category">
-                <SelectValue placeholder="Select category" />
+                <SelectValue placeholder="Selecione a categoria" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Categories</SelectItem>
+                <SelectItem value="all">Todas as categorias</SelectItem>
                 {categories?.map((category) => (
                   <SelectItem key={category.id} value={category.id.toString()}>
                     {category.name}
@@ -388,16 +400,16 @@ export default function ExpenseReport({
             </Select>
           </div>
           <div>
-            <Label htmlFor="type">Type</Label>
+            <Label htmlFor="type">Tipo</Label>
             <Select
               value={filters.typeId}
               onValueChange={(value) => handleFilterChange("typeId", value)}
             >
               <SelectTrigger id="type">
-                <SelectValue placeholder="Select type" />
+                <SelectValue placeholder="Selecione o tipo" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Types</SelectItem>
+                <SelectItem value="all">Todos os tipos</SelectItem>
                 {expenseTypes.map((type) => (
                   <SelectItem key={type.id} value={type.id.toString()}>
                     {type.name}
@@ -407,7 +419,7 @@ export default function ExpenseReport({
             </Select>
           </div>
           <div>
-            <Label htmlFor="minAmount">Min Amount</Label>
+            <Label htmlFor="minAmount">Montante mínimo</Label>
             <Input
               type="number"
               id="minAmount"
@@ -416,7 +428,7 @@ export default function ExpenseReport({
             />
           </div>
           <div>
-            <Label htmlFor="maxAmount">Max Amount</Label>
+            <Label htmlFor="maxAmount">Montante máximo</Label>
             <Input
               type="number"
               id="maxAmount"
@@ -425,7 +437,7 @@ export default function ExpenseReport({
             />
           </div>
           <div>
-            <Label htmlFor="paymentMethod">Payment Method</Label>
+            <Label htmlFor="paymentMethod">Método de pagamento</Label>
             <Select
               value={filters.paymentMethod}
               onValueChange={(value) =>
@@ -433,25 +445,25 @@ export default function ExpenseReport({
               }
             >
               <SelectTrigger id="paymentMethod">
-                <SelectValue placeholder="Select payment method" />
+                <SelectValue placeholder="Selecionar o método de pagamento" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Methods</SelectItem>
+                <SelectItem value="all">Todos os métodos</SelectItem>
                 <SelectItem value="CASH">Cash</SelectItem>
-                <SelectItem value="TRANSFER">Transfer</SelectItem>
+                <SelectItem value="TRANSFER">Transferência</SelectItem>
               </SelectContent>
             </Select>
           </div>
         </div>
         <div className="mb-4">
-          <p>Matching expenses: {filteredExpenseCount}</p>
+          <p>Despesas de contrapartida: {filteredExpenseCount}</p>
         </div>
         <Button
           onClick={generateExcel}
           className="w-full mb-6 bg-green-500 hover:bg-green-600 hover:text-white hover:shadow-md"
           disabled={isLoading || filteredExpenseCount === 0}
         >
-          {isLoading ? "Generating..." : "Generate Comprehensive Excel Report"}
+          {isLoading ? "Gerando..." : "Gerar Relatório"}
         </Button>
       </CardContent>
     </Card>

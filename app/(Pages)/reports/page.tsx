@@ -18,11 +18,11 @@ export default function ReportPage() {
         <div className="flex items-center mb-2">
           <FileText className="w-10 h-10 mr-4" />
           <h1 className="text-4xl md:text-5xl font-extrabold">
-            Expense Reports
+            Relatórios de despesas
           </h1>
         </div>
         <p className="text-xl opacity-80">
-          Generate, view, and manage your expense reports
+          Gerar, ver e gerir os seus relatórios de despesas
         </p>
       </div>
       <div className="mb-8">

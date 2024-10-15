@@ -24,16 +24,17 @@ export function Header() {
     try {
       await signOut({ redirect: false });
       toast({
-        title: "Success",
-        description: "You have been logged out.",
+        title: "Sucesso",
+        description: "A sua sessão foi terminada.",
         variant: "default",
         className: "bg-green-500 text-white",
       });
       router.push("/");
     } catch (error) {
       toast({
-        title: "Error",
-        description: "An error occurred while signing out. Please try again.",
+        title: "Erro",
+        description:
+          "Ocorreu um erro ao terminar a sessão. Por favor, tente novamente.",
         variant: "destructive",
       });
     }
@@ -63,7 +64,7 @@ export function Header() {
           </svg>
         </div>
         <span className="hidden md:inline-block font-semibold text-lg ml-2">
-          Expense Management
+          Gestão de Despesas
         </span>
       </div>
 
@@ -89,7 +90,7 @@ export function Header() {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuLabel>Minha conta</DropdownMenuLabel>
             <DropdownMenuSeparator />
             {/* <DropdownMenuItem onSelect={() => router.push("/profile")}>
               Profile
@@ -98,7 +99,7 @@ export function Header() {
               Settings
             </DropdownMenuItem> */}
             <DropdownMenuItem onSelect={handleSignOut}>
-              Log out
+              Terminar sessão
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

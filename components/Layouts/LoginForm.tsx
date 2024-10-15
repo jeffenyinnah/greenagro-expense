@@ -58,8 +58,8 @@ export default function LoginForm() {
         });
       } else if (result?.ok) {
         toast({
-          title: "Success",
-          description: "Login successful. Redirecting...",
+          title: "Sucesso",
+          description: "Início de sessão bem sucedido ...",
           variant: "default",
           className: "bg-green-500 text-white",
         });
@@ -68,7 +68,7 @@ export default function LoginForm() {
     } catch (error) {
       toast({
         title: "Error",
-        description: "An unexpected error occurred. Please try again.",
+        description: "Ocorreu um erro inesperado. Por favor, tente novamente.",
         variant: "destructive",
       });
     } finally {
@@ -98,7 +98,7 @@ export default function LoginForm() {
               d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
             ></path>
           </svg>
-          <p className="text-green-600 font-semibold">Logging in...</p>
+          <p className="text-green-600 font-semibold">Iniciar sessão...</p>
         </div>
       </div>
     );
@@ -109,7 +109,7 @@ export default function LoginForm() {
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <p className="text-green-600 font-semibold">
-            Redirecting {session.user.email}...
+            Redirecionar {session.user.email}...
           </p>
         </div>
       </div>
@@ -136,10 +136,10 @@ export default function LoginForm() {
           </svg>
         </div>
         <CardTitle className="text-2xl font-bold text-center text-green-800">
-          Expense Manager
+          Gestor de Despesas
         </CardTitle>
         <CardDescription className="text-center text-green-600">
-          Login to manage your expenses
+          Iniciar sessão para gerir as suas despesas
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -158,11 +158,11 @@ export default function LoginForm() {
             )}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password">Senha</Label>
             <Input
               id="password"
               {...register("password")}
-              placeholder="******"
+              placeholder="********"
               type="password"
               disabled={isLoading}
             />
@@ -192,10 +192,10 @@ export default function LoginForm() {
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                   ></path>
                 </svg>
-                Logging in...
+                Iniciar sessão ...
               </div>
             ) : (
-              "Log In"
+              "Entrar"
             )}
           </Button>
         </form>

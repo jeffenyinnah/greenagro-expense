@@ -24,26 +24,26 @@ import {
 } from "@/components/ui/sheet";
 
 const menuItems = [
-  { href: "/dashboard", icon: Home, label: "Dashboard" },
+  { href: "/dashboard", icon: Home, label: "Painel de controlo" },
   {
     href: "/expenses",
     icon: DollarSign,
-    label: "Expenses",
+    label: "Despesas",
     subItems: [
-      { href: "/expenses/users", icon: Users, label: "Users" },
+      { href: "/expenses/users", icon: Users, label: "Usuários" },
       {
         href: "/expenses/expense-categories",
         icon: FileText,
-        label: "Expense Categories",
+        label: "Categorias de despesas",
       },
       {
         href: "/expenses/expense-types",
         icon: FileText,
-        label: "Expense Types",
+        label: "Tipos de despesas",
       },
     ],
   },
-  { href: "/reports", icon: BarChart2, label: "Reports" },
+  { href: "/reports", icon: BarChart2, label: "  Relatórios" },
 ];
 
 export function Sidebar() {
@@ -114,8 +114,8 @@ export function Sidebar() {
               />
             </svg>
           </div>
-          <h2 className="text-xl font-bold text-white">Expense Manager</h2>
-          <p className="text-sm text-green-50 mt-1">Manage your finances</p>
+          <h2 className="text-xl font-bold text-white">Gestor de Despesas</h2>
+          <p className="text-sm text-green-50 mt-1">Gerir as finanças</p>
         </div>
         <SidebarContent />
       </aside>
@@ -138,7 +138,9 @@ export function Sidebar() {
                 />
               </svg>
             </div>
-            <SheetTitle className="text-white ml-2">Expense Manager</SheetTitle>
+            <SheetTitle className="text-white ml-2">
+              Gestor de Despesas
+            </SheetTitle>
           </SheetHeader>
           <SidebarContent isMobile={true} />
           <SheetClose className="absolute top-4 right-4">

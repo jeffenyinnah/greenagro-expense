@@ -89,7 +89,9 @@ export default function ExpenseList({
     if (typeof expense.id === "number") {
       onDelete(expense.id);
     } else {
-      console.error("Cannot delete expense without a valid id");
+      console.error(
+        "Não é possível eliminar despesas sem uma identificação válida"
+      );
     }
   };
 
@@ -156,43 +158,45 @@ export default function ExpenseList({
                 <div class="header">
                   <img src="/logo.png" alt="Logo" class="logo" />
                   <div class="title">
-                    <h1>GREEN AGRO COMMODITIES, LIMITADA</h1>
-                    <h3>MAPUTO-MOZAMBIQUE</h3>
+                    <h1>NOME DA ORGANIZAÇÃO</h1>
+                    <h3>MAPUTO-MOÇAMBIQUE</h3>
                   </div>
                   <div class="form-number">
-                    <p>Treasury F1</p>
+                    <p>Tesouraria F1</p>
                     <p>N° ${viewingExpense.id?.toString().padStart(4, "0")}</p>
                   </div>
                 </div>
-                <h2 class="voucher-title">PAYMENT VOUCHER</h2>
-                <p>Checked and passed for payment at MAPUTO</p>
+                <h2 class="voucher-title">VALE DE PAGAMENTO</h2>
+                <p>Verificado e aprovado para pagamento no MAPUTO</p>
                 <div class="details">
-                  <p><strong>Classification Code:</strong> 26</p>
-                  <p><strong>Date:</strong> ${
+                  <p><strong>Código de classificação:</strong> 26</p>
+                  <p><strong>Data:</strong> ${
                     new Date(viewingExpense.date).toISOString().split("T")[0]
                   }</p>
-                  <p><strong>Amount:</strong> MZN${viewingExpense.amount.toFixed(
+                  <p><strong>Momtante:</strong> MZN${viewingExpense.amount.toFixed(
                     2
                   )}</p>
-                  <p><strong>Payment Method:</strong> ${
+                  <p><strong>Método de pagamento:</strong> ${
                     viewingExpense.PaymentMethod
                   }</p>
-                  <p><strong>Category:</strong> ${getCategoryName(
+                  <p><strong>Categoria:</strong> ${getCategoryName(
                     viewingExpense.categoryId
                   )}</p>
-                  <p><strong>Type:</strong> ${getTypeName(
+                  <p><strong>Tipo:</strong> ${getTypeName(
                     viewingExpense.typeId
                   )}</p>
-                  <p><strong>Payee:</strong> ${viewingExpense.vendorPayee}</p>
-                  <p><strong>Address:</strong> ${
+                  <p><strong>Beneficiário (Payee):</strong> ${
+                    viewingExpense.vendorPayee
+                  }</p>
+                  <p><strong>Endereço:</strong> ${
                     viewingExpense.expenseLocation
                   }</p>
                 </div>
                 <table class="expense-table">
                   <thead>
                     <tr>
-                      <th>Date</th>
-                      <th>Detailed Description of Service/Work</th>
+                      <th>Data</th>
+                      <th>Descrição detalhada do serviço/trabalho</th>
                       <th>MZN</th>
                     </tr>
                   </thead>
@@ -209,24 +213,24 @@ export default function ExpenseList({
                   </tbody>
                 </table>
                 <div class="totals">
-                  <p><strong>VAT (16%):</strong> 0.16</p>
+                  <p><strong>IVA (16%):</strong> 0.16</p>
                   <p><strong>Total:</strong> ${viewingExpense.amount.toFixed(
                     2
                   )}</p>
-                  <p><strong>Total with VAT(16%):</strong> ${(
+                  <p><strong>Total com IVA(16%):</strong> ${(
                     viewingExpense.amount * 1.16
                   ).toFixed(2)} MZN</p>
                 </div>
                 <div class="certificate">
-                  <h3>CERTIFICATE</h3>
-                  <p>---I Certify the above amount is correct, and was incurred under the Authority quoted, that the service have been
-                  duly performed, that the rate/price charged is according to regulations/contract is fair and reasonable
-                  that the amount of ......................................................... Meticais
-                  may paid under the Classification quoted</p>
+                  <h3>CERTIFICADO</h3>
+                  <p>---Certifico que o montante acima indicado é correto e foi incorrido ao abrigo da Autoridade indicada, que o serviço foi
+                  devidamente executado, que a taxa/preço cobrado está de acordo com os regulamentos/contrato é justo e razoável
+                  que o montante de ......................................................... Meticais
+                  pode ser pago no âmbito da classificação citada</p>
                 </div>
                 <div class="signature">
-                  <p>Signature of GreenAgro</p>
-                  <p>Director</p>
+                  <p>Assinatura da Organização</p>
+                  <p>Diretor</p>
                 </div>
               </div>
             </body>
@@ -265,55 +269,55 @@ export default function ExpenseList({
     // Set up the document header
     doc.setFontSize(16);
     doc.setTextColor(23, 163, 74); // Blue color for header text
-    doc.text("GREEN AGRO COMMODITIES, LIMITADA", 105, 25, { align: "center" });
+    doc.text("NOME DA ORGANIZAÇÃO", 105, 25, { align: "center" });
     doc.setFontSize(14);
-    doc.text("MAPUTO-MOZAMBIQUE", 105, 45, { align: "center" });
+    doc.text("MAPUTO-MOÇAMBIQUE", 105, 45, { align: "center" });
 
     // Add form details (Treasury F1 and Number)
     doc.setFontSize(12);
     doc.setTextColor(0); // Reset to black
     doc.rect(150, 15, 45, 20); // Add a border around the form number
-    doc.text("Treasury F1", 153, 25);
+    doc.text("Tesouraria F1", 153, 25);
     doc.text(`N° ${viewingExpense.id.toString().padStart(4, "0")}`, 153, 32);
 
     // Payment Voucher title
     doc.setFontSize(18);
     doc.setTextColor(0); // Black color
-    doc.text("PAYMENT VOUCHER", 105, 60, { align: "center" });
+    doc.text("VALE DE PAGAMENTO", 105, 60, { align: "center" });
 
     // Checked and passed for payment
     doc.setFontSize(10);
-    doc.text("Checked and passed for payment at MAPUTO", 15, 70);
+    doc.text("Verificado e aprovado para pagamento no MAPUTO", 15, 70);
 
     // Add table for classification code
     doc.rect(15, 75, 180, 10);
-    doc.text("Classification Code", 17, 81);
+    doc.text("Código de classificação", 17, 81);
     doc.text("26", 100, 81);
 
     // Add date, amount, and other details
     doc.rect(15, 87, 180, 40);
     doc.text(
-      `Date: ${new Date(viewingExpense.date).toISOString().split("T")[0]}`,
+      `Data: ${new Date(viewingExpense.date).toISOString().split("T")[0]}`,
       17,
       93
     );
-    doc.text(`Amount: MZN${viewingExpense.amount.toFixed(2)}`, 100, 93);
-    doc.text(`Payment Method: ${viewingExpense.PaymentMethod}`, 17, 101);
+    doc.text(`Montante: MZN${viewingExpense.amount.toFixed(2)}`, 100, 93);
+    doc.text(`Método de pagamento: ${viewingExpense.PaymentMethod}`, 17, 101);
     doc.text(
-      `Category: ${getCategoryName(viewingExpense.categoryId)}`,
+      `Categoria: ${getCategoryName(viewingExpense.categoryId)}`,
       17,
       109
     );
-    doc.text(`Type: ${getTypeName(viewingExpense.typeId)}`, 100, 109);
-    doc.text(`Payee: ${viewingExpense.vendorPayee}`, 17, 117);
-    doc.text(`Address: ${viewingExpense.expenseLocation}`, 17, 125);
+    doc.text(`Tipo: ${getTypeName(viewingExpense.typeId)}`, 100, 109);
+    doc.text(`Beneficiário (Payee): ${viewingExpense.vendorPayee}`, 17, 117);
+    doc.text(`Endereço: ${viewingExpense.expenseLocation}`, 17, 125);
 
     // Add expense details
     doc.rect(15, 129, 180, 40);
     doc.setFillColor(240, 240, 240); // Light gray background for header
     doc.rect(15, 129, 180, 8, "F");
-    doc.text("Date", 17, 135);
-    doc.text("Detailed Description of Service/Work", 50, 135);
+    doc.text("Data", 17, 135);
+    doc.text("Descrição detalhada do serviço/trabalho", 50, 135);
     doc.text("MZN", 170, 135);
     doc.text(
       new Date(viewingExpense.date).toISOString().split("T")[0],
@@ -325,48 +329,48 @@ export default function ExpenseList({
 
     // Add total and exchange rate
     doc.rect(15, 171, 180, 20);
-    doc.text(`VAT (16%): 0.16`, 17, 177);
+    doc.text(`IVA (16%): 0.16`, 17, 177);
     doc.text(`Total`, 150, 177);
     doc.text(viewingExpense.amount.toFixed(2), 170, 177);
-    doc.text(`Total with VAT`, 130, 185);
+    doc.text(`Total com IVA`, 130, 185);
     doc.text((viewingExpense.amount * 1.16).toFixed(2), 170, 185);
 
     // Add certificate
     doc.setFillColor(240, 240, 240);
     doc.rect(15, 193, 180, 8, "F");
-    doc.text("CERTIFICATE", 105, 199, { align: "center" });
+    doc.text("CERTIFICADO", 105, 199, { align: "center" });
     doc.setFontSize(8);
     doc.text(
-      "---I Certify the above amount is correct, and was incurred under the Authority quoted, that the service have been",
+      "---Certifico que o montante acima indicado é correto e foi incorrido ao abrigo da Autoridade indicada, que o serviço foi",
       17,
       207
     );
     doc.text(
-      "duly performed, that the rate/price charged is according to regulations/contract is fair and reasonable",
+      "devidamente efectuada, que a taxa/preço cobrado é, de acordo com os regulamentos/contrato, justa e razoável",
       17,
       213
     );
     doc.text(
-      "that the amount of ......................................................... Meticais",
+      "que o montante de ......................................................... Meticais",
       17,
       219
     );
-    doc.text("may paid under the Classification quoted", 17, 225);
+    doc.text("pode ser pago no âmbito da classificação citada", 17, 225);
 
     doc.line(140, 240, 190, 240); // Signature line
-    doc.text("Signature of GreenAgro", 140, 246);
-    doc.text("Director", 140, 252);
+    doc.text("Assinatura da Organização", 140, 246);
+    doc.text("Diretor", 140, 252);
 
     // Add current date at the bottom
     const currentDate = new Date().toLocaleDateString();
     doc.setFontSize(10);
-    doc.text(`Generated on: ${currentDate}`, 105, 280, { align: "center" });
+    doc.text(`Gerado em: ${currentDate}`, 105, 280, { align: "center" });
 
     doc.save(`expense_voucher_${viewingExpense.id}.pdf`);
   };
 
   if (!Array.isArray(expenses) || expenses.length === 0) {
-    return <div>No expenses data available.</div>;
+    return <div>Não há dados disponíveis sobre as despesas.</div>;
   }
 
   return (
@@ -379,51 +383,51 @@ export default function ExpenseList({
                 onClick={() => onSort("description")}
                 className="hidden md:table-cell cursor-pointer"
               >
-                Description {getSortIcon("description")}
+                Descrição {getSortIcon("description")}
               </TableHead>
               <TableHead
                 onClick={() => onSort("amount")}
                 className="cursor-pointer"
               >
-                Amount MZN{getSortIcon("amount")}
+                Montante MZN{getSortIcon("amount")}
               </TableHead>
               <TableHead
                 onClick={() => onSort("date")}
                 className="hidden sm:table-cell cursor-pointer"
               >
-                Date {getSortIcon("date")}
+                Data {getSortIcon("date")}
               </TableHead>
               <TableHead
                 onClick={() => onSort("categoryId")}
                 className="hidden lg:table-cell cursor-pointer"
               >
-                Category {getSortIcon("categoryId")}
+                Categoria {getSortIcon("categoryId")}
               </TableHead>
               <TableHead
                 onClick={() => onSort("typeId")}
                 className="hidden lg:table-cell cursor-pointer"
               >
-                Type {getSortIcon("typeId")}
+                Tipo {getSortIcon("typeId")}
               </TableHead>
               <TableHead
                 onClick={() => onSort("PaymentMethod")}
                 className="hidden xl:table-cell cursor-pointer"
               >
-                Payment Method {getSortIcon("PaymentMethod")}
+                Método de pagamento {getSortIcon("PaymentMethod")}
               </TableHead>
               <TableHead
                 onClick={() => onSort("vendorPayee")}
                 className="hidden xl:table-cell cursor-pointer"
               >
-                Vendor/Payee {getSortIcon("vendorPayee")}
+                Fornecedor/Destinatário {getSortIcon("vendorPayee")}
               </TableHead>
               <TableHead
                 onClick={() => onSort("expenseLocation")}
                 className="hidden xl:table-cell cursor-pointer"
               >
-                Location {getSortIcon("expenseLocation")}
+                Localização {getSortIcon("expenseLocation")}
               </TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead className="text-right">Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -483,7 +487,7 @@ export default function ExpenseList({
             ) : (
               <TableRow>
                 <TableCell colSpan={9} className="text-center">
-                  No expenses found.
+                  Não foram detectadas despesas.
                 </TableCell>
               </TableRow>
             )}
@@ -533,45 +537,47 @@ export default function ExpenseList({
       >
         <DialogContent className="bg-white text-black">
           <DialogHeader>
-            <DialogTitle>Expense Details</DialogTitle>
+            <DialogTitle>Detalhes da Despesa</DialogTitle>
           </DialogHeader>
           {viewingExpense && (
             <div className="space-y-4">
               <p>
-                <strong>Description:</strong> {viewingExpense.description}
+                <strong>Descrição:</strong> {viewingExpense.description}
               </p>
               <p>
-                <strong>Amount:</strong> ${viewingExpense.amount.toFixed(2)}
+                <strong>Montante:</strong> MZN{viewingExpense.amount.toFixed(2)}
               </p>
               <p>
-                <strong>Date:</strong>{" "}
+                <strong>Data:</strong>{" "}
                 {new Date(viewingExpense.date).toLocaleDateString()}
               </p>
               <p>
-                <strong>Category:</strong>{" "}
+                <strong>Categoria:</strong>{" "}
                 {getCategoryName(viewingExpense.categoryId)}
               </p>
               <p>
-                <strong>Type:</strong> {getTypeName(viewingExpense.typeId)}
+                <strong>Tipo:</strong> {getTypeName(viewingExpense.typeId)}
               </p>
               <p>
-                <strong>Payment Method:</strong> {viewingExpense.PaymentMethod}
+                <strong>Método de pagamento:</strong>{" "}
+                {viewingExpense.PaymentMethod}
               </p>
               <p>
-                <strong>Vendor/Payee:</strong> {viewingExpense.vendorPayee}
+                <strong>Fornecedor/Destinatário:</strong>{" "}
+                {viewingExpense.vendorPayee}
               </p>
               <p>
-                <strong>Location:</strong> {viewingExpense.expenseLocation}
+                <strong>Localização:</strong> {viewingExpense.expenseLocation}
               </p>
               {viewingExpense.receiptUpload && (
                 <p>
-                  <strong>Receipt:</strong>{" "}
+                  <strong>Recibo:</strong>{" "}
                   <a
                     href={viewingExpense.receiptUpload}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    View Receipt
+                    Ver recibo
                   </a>
                 </p>
               )}
@@ -579,10 +585,10 @@ export default function ExpenseList({
           )}
           <DialogFooter className="flex justify-center sm:justify-end gap-2">
             <Button onClick={handlePrint} className="mr-2">
-              <Printer className="h-4 w-4 mr-2" /> Print Voucher
+              <Printer className="h-4 w-4 mr-2" /> Imprimir vale
             </Button>
             <Button onClick={handleDownload} className="mr-2">
-              <Download className="h-4 w-4 mr-2" /> Download Voucher
+              <Download className="h-4 w-4 mr-2" /> Descarregar o vale
             </Button>
             <Button
               onClick={() => {
@@ -593,7 +599,7 @@ export default function ExpenseList({
               }}
               variant="destructive"
             >
-              <Trash2 className="h-4 w-4 mr-2" /> Delete
+              <Trash2 className="h-4 w-4 mr-2" /> Apagar
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -139,7 +139,7 @@ export default function Dashboard() {
   if (status === "loading" || isLoading) {
     return (
       <div className="flex items-center justify-center h-screen text-xl font-semibold text-gray-600">
-        Loading...
+        Carregar...
       </div>
     );
   }
@@ -147,7 +147,7 @@ export default function Dashboard() {
   if (status === "unauthenticated") {
     return (
       <div className="flex items-center justify-center h-screen text-xl font-semibold text-red-600">
-        Access Denied
+        Acesso recusado
       </div>
     );
   }
@@ -155,7 +155,7 @@ export default function Dashboard() {
   if (!dashboardData) {
     return (
       <div className="flex items-center justify-center h-screen text-xl font-semibold text-gray-600">
-        No data available
+        Não há dados disponíveis
       </div>
     );
   }
@@ -163,8 +163,9 @@ export default function Dashboard() {
   return (
     <div className="container mx-auto p-6 bg-gray-50 min-h-screen">
       <div className="flex flex-col md:flex-row justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-800 mb-4 md:mb-0">
-          Welcome {session?.user.email} to Expense Analytics Dashboard
+        <h1 className="text-2xl font-bold text-gray-800 mb-4 md:mb-0">
+          Bem-vindo {session?.user.email} ao Painel de Controlo da Análise de
+          Despesas
         </h1>
         <div className="flex items-center space-x-4">
           <Select value={selectedMonth} onValueChange={setSelectedMonth}>
@@ -183,7 +184,7 @@ export default function Dashboard() {
             className="bg-green-600 hover:bg-green-700 text-white"
             onClick={handleGenerateReport}
           >
-            Generate Report
+            Gerar Relatório
           </Button>
         </div>
       </div>
@@ -192,7 +193,7 @@ export default function Dashboard() {
         <Card className="bg-white shadow-lg rounded-lg border-green-600 border-t-4">
           <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-700">
-              Total Expenses
+              Total das Despesas
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -204,7 +205,7 @@ export default function Dashboard() {
         <Card className="bg-white shadow-lg rounded-lg border-green-600 border-t-4">
           <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-700">
-              Total Categories
+              Total de categorias
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -216,7 +217,7 @@ export default function Dashboard() {
         <Card className="bg-white shadow-lg rounded-lg border-green-600 border-t-4">
           <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-700">
-              Total Vouchers
+              Vales Gerados
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -231,7 +232,7 @@ export default function Dashboard() {
         <Card className="bg-white shadow-lg rounded-lg">
           <CardHeader>
             <CardTitle className="text-xl font-semibold text-gray-800">
-              Expenses by Category
+              Despesas por categoria
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -255,7 +256,7 @@ export default function Dashboard() {
         <Card className="bg-white shadow-lg rounded-lg">
           <CardHeader>
             <CardTitle className="text-xl font-semibold text-gray-800">
-              Weekly Expense Trend
+              Tendência semanal das despesas
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -287,7 +288,7 @@ export default function Dashboard() {
         <Card className="bg-white shadow-lg rounded-lg">
           <CardHeader>
             <CardTitle className="text-xl font-semibold text-gray-800">
-              Expense Types
+              Tipos de despesas
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -326,7 +327,7 @@ export default function Dashboard() {
         <Card className="bg-white shadow-lg rounded-lg">
           <CardHeader>
             <CardTitle className="text-xl font-semibold text-gray-800">
-              Recent Expenses
+              Despesas recentes
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -334,11 +335,11 @@ export default function Dashboard() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="text-gray-700">Category</TableHead>
+                    <TableHead className="text-gray-700">Categoria</TableHead>
                     <TableHead className="text-gray-700">
-                      Amount (MZN)
+                      Montante (MZN)
                     </TableHead>
-                    <TableHead className="text-gray-700">Date</TableHead>
+                    <TableHead className="text-gray-700">Data</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>

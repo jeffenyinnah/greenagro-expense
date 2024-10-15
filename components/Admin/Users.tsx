@@ -36,12 +36,12 @@ import { useToast } from "@/hooks/use-toast";
 const userSchema = z.object({
   id: z.number().optional(),
   fullname: z.string().min(1, "Name is required"),
-  email: z.string().email("Invalid email address"),
-  department: z.string().min(1, "Department is required"),
+  email: z.string().email("Endereço eletrónico inválido"),
+  department: z.string().min(1, "O departamento é obrigatório"),
   role: z.enum(["ADMIN", "USER"]),
   password: z
     .string()
-    .min(8, "Password must be at least 8 characters")
+    .min(8, "PA palavra-passe deve ter pelo menos 8 caracteres")
     .optional(),
 });
 
@@ -80,8 +80,8 @@ export default function UsersPage() {
     } catch (error) {
       console.error("Error fetching users:", error);
       toast({
-        title: "Error",
-        description: "Failed to fetch users",
+        title: "Erro",
+        description: "Falha na obtenção de usuários",
         className: "bg-red-500",
         duration: 2000,
       });
@@ -98,15 +98,15 @@ export default function UsersPage() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to update user");
+        throw new Error(errorData.error || "Falha ao atualizar o usuário");
       }
 
       await fetchUsers();
       toast({
-        title: editingUser ? "User updated" : "User created",
+        title: editingUser ? "Usuário atualizado" : "Usuário criado",
         description: `User has been ${
-          editingUser ? "updated" : "created"
-        } successfully`,
+          editingUser ? "atualizado" : "criado"
+        } com sucesso`,
         className: editingUser ? "bg-green-600" : "bg-green-500",
         duration: 2000,
       });
@@ -116,8 +116,8 @@ export default function UsersPage() {
     } catch (error) {
       console.error("Error updating/creating user:", error);
       toast({
-        title: "Error",
-        description: "Failed to update/create user",
+        title: "Erro",
+        description: "Falha na atualização/criação do usuário",
         className: "bg-red-500",
         duration: 2000,
       });
@@ -161,16 +161,16 @@ export default function UsersPage() {
 
       await fetchUsers();
       toast({
-        title: "User deleted",
-        description: "User has been deleted successfully",
+        title: "Usuário apagado",
+        description: "O usuário foi apagado com sucesso",
         className: "bg-red-500",
         duration: 2000,
       });
     } catch (error) {
-      console.error("Error deleting user:", error);
+      console.error("Erro ao apagar o usuário:", error);
       toast({
-        title: "Error",
-        description: "Failed to delete user",
+        title: "Erro",
+        description: "Erro ao apagar o usuário",
         className: "bg-red-500",
         duration: 2000,
       });
@@ -180,14 +180,14 @@ export default function UsersPage() {
   return (
     <Card className="w-full">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-2xl font-bold">Users</CardTitle>
+        <CardTitle className="text-2xl font-bold">Usuários</CardTitle>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button
               className="bg-green-600 hover:bg-green-700"
               onClick={handleOpenDialog}
             >
-              <Plus className="mr-2 h-4 w-4" /> Add User
+              <Plus className="mr-2 h-4 w-4" /> Adicionar usuário
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[425px] bg-white">
@@ -199,7 +199,7 @@ export default function UsersPage() {
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div>
                 <Label htmlFor="fullname" className="text-black">
-                  Full Name
+                  Nome completo
                 </Label>
                 <Input
                   id="fullname"
@@ -230,7 +230,7 @@ export default function UsersPage() {
               </div>
               <div>
                 <Label htmlFor="password" className="text-black">
-                  Password
+                  Palavra-passe
                 </Label>
                 <Input
                   id="password"
@@ -246,7 +246,7 @@ export default function UsersPage() {
               </div>
               <div>
                 <Label htmlFor="department" className="text-black">
-                  Department
+                  Departmento
                 </Label>
                 <Input
                   id="department"
@@ -261,7 +261,7 @@ export default function UsersPage() {
               </div>
               <div>
                 <Label htmlFor="role" className="text-black">
-                  Role
+                  Função
                 </Label>
                 <Controller
                   name="role"
@@ -272,11 +272,11 @@ export default function UsersPage() {
                       defaultValue={field.value}
                     >
                       <SelectTrigger className="text-black">
-                        <SelectValue placeholder="Select role" />
+                        <SelectValue placeholder="Selecionar função" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="ADMIN">Admin</SelectItem>
-                        <SelectItem value="USER">User</SelectItem>
+                        <SelectItem value="USER">Usuário</SelectItem>
                       </SelectContent>
                     </Select>
                   )}
@@ -291,7 +291,7 @@ export default function UsersPage() {
                 type="submit"
                 className="w-full bg-green-600 hover:bg-green-700"
               >
-                {editingUser ? "Update User" : "Create User"}
+                {editingUser ? "Atualizar usuário" : "Criar usuário"}
               </Button>
             </form>
           </DialogContent>
@@ -302,11 +302,11 @@ export default function UsersPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[150px]">Name</TableHead>
+                <TableHead className="w-[150px]">Nome completo</TableHead>
                 <TableHead className="w-[200px]">Email</TableHead>
-                <TableHead>Department</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>Departmento</TableHead>
+                <TableHead>Função</TableHead>
+                <TableHead className="text-right">Acções</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
