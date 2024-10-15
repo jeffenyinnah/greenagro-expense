@@ -301,19 +301,16 @@ export default function ExpenseReport({
       });
 
       if (response.ok) {
+        const newReport = await response.json();
         toast({
           title: "Report generated and saved successfully!",
+          description: `Report ID: ${newReport.id}`,
           className: "bg-green-500 text-white",
         });
         onReportGenerated();
 
-        // Trigger download
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = fileName;
-        link.click();
-        URL.revokeObjectURL(url);
+        // Open the file URL in a new tab
+        window.open(newReport.fileUrl, "_blank");
       } else {
         const errorData = await response.json();
         throw new Error(errorData.error || "Failed to save the report");
@@ -322,7 +319,10 @@ export default function ExpenseReport({
       console.error("Error generating report:", error);
       toast({
         title: "Failed to generate the report",
-        description: "An unexpected error occurred. Please try again.",
+        description:
+          error instanceof Error
+            ? error.message
+            : "An unexpected error occurred",
         variant: "destructive",
       });
     } finally {

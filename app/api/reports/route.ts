@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
-import { writeFile, mkdir } from 'fs/promises';
-import path from 'path';
+import { put } from '@vercel/blob';
 
 const prisma = new PrismaClient();
 
@@ -16,19 +15,17 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'File and name are required' }, { status: 400 });
     }
 
-    const bytes = await file.arrayBuffer();
-
-    // Ensure the reports directory exists
-    const reportsDir = path.join(process.cwd(), 'public', 'reports');
-    await createDirectoryIfNotExists(reportsDir);
-
-    const filePath = path.join(reportsDir, name);
-    await writeFile(filePath, new Uint8Array(bytes));
-
-    const fileUrl = `/reports/${name}`;
+    // Upload to Vercel Blob Storage
+    const { url } = await put(name, file, {
+      access: 'public',
+    });
 
     const newReport = await prisma.report.create({
-      data: { name, description, fileUrl },
+      data: {
+        name,
+        description,
+        fileUrl: url,
+      },
     });
 
     return NextResponse.json(newReport, { status: 201 });
@@ -47,15 +44,5 @@ export async function GET() {
   } catch (error) {
     console.error('Error in GET /api/reports:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
-  }
-}
-
-async function createDirectoryIfNotExists(dirPath: string) {
-  try {
-    await mkdir(dirPath, { recursive: true });
-  } catch (error) {
-    if ((error as NodeJS.ErrnoException).code !== 'EEXIST') {
-      throw error;
-    }
   }
 }

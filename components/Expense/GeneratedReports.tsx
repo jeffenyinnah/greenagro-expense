@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 type Report = {
   id: number;
@@ -20,6 +21,7 @@ export default function GeneratedReports({
   refreshTrigger,
 }: GeneratedReportsProps) {
   const [reports, setReports] = useState<Report[]>([]);
+  const { toast } = useToast();
 
   useEffect(() => {
     fetchReports();
@@ -41,6 +43,11 @@ export default function GeneratedReports({
     const response = await fetch(`/api/reports/${id}`, { method: "DELETE" });
     if (response.ok) {
       fetchReports();
+      toast({
+        title: "Report Deleted",
+        description: "Your report was successfully deleted.",
+        variant: "destructive",
+      });
     }
   };
 
